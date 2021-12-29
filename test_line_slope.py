@@ -51,7 +51,7 @@ def main():
     ax = fig.add_subplot(1, 1, 1)
     ax.set_xlabel('PC 1', fontsize=15)
     ax.set_ylabel('PC 2', fontsize=15)
-    ax.scatter(principle_components[:,0], principle_components[:,1])
+    ax.scatter(principle_components[:, 0], principle_components[:, 1])
     plt.xlim([-2.5, 2.5])
     plt.ylim([-2.5, 2.5])
     plt.show()
@@ -74,7 +74,7 @@ class NoisyArray(np.ndarray):
 #        print('this is self at the exit of the function', self)
 
     def restrict(self, Y, a, b):
-        '''
+        """
         return part of X and Y vectors within [a, b]
         :param Y: 1D array of y
         :param a: lower bound
@@ -82,7 +82,7 @@ class NoisyArray(np.ndarray):
         :return:
         self.restricted, Y.restricted
         Note: self is X!
-        '''
+        """
         target_i = np.where(np.logical_and(self > a, self < b))[0]
         selected_X = self[target_i]  # selected interval to compute epsilon
         selected_Y = Y[target_i]  # TODO: all energies to IP/EA
@@ -121,10 +121,6 @@ def compute_a_b(X, Y):
     a, b = np.polyfit(X, Y, 1)
     return a, b
 
-
-def compute_a_b(X,Y):
-    a, b = np.polyfit(X,Y,1)
-    return a, b
 
 if __name__ == '__main__':
     main()
