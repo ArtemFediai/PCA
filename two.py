@@ -1,3 +1,8 @@
+"""
+two-dimensional feature space
+linearly correlated points with a random component
+"""
+
 import os.path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -42,13 +47,17 @@ plt.savefig(os.path.join(OUT_PATH, 'original_data.png'), dpi=600)
 
 
 # Compute covariance matrix
-XY = [X, Y]
+XY = np.array([X, Y])
 print('\nX, Y array:\n', np.array(XY))
 cov_mat = np.cov(XY)
 print('\ncovariance matrix: \n', cov_mat)
 
-# Compute PCs
-eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
+# Compute PCs as the eigen-things of the covariance matrix
+eigen_vals_non_sorted, eigen_vecs_non_sorted = np.linalg.eig(cov_mat)
+
+idx = np.flip(np.argsort(eigen_vals_non_sorted))
+eigen_vals = eigen_vals_non_sorted[idx]
+eigen_vecs = eigen_vecs_non_sorted[idx]
 
 print('\nPC eigenvalues: \n', eigen_vals)
 print('\nPC eigenvectors: \n', eigen_vecs)
@@ -69,8 +78,10 @@ plt.close()
 PC1 = eigen_vecs[0]
 PC2 = eigen_vecs[1]
 res = np.dot(PC1, PC2)
-print(PC1)
-print(PC2)
+print(f'PC1 (vector): {PC1}')
+print(f'PC2 (vector): {PC2}')
+print(f'PC1 (scalar): {eigen_vals[0]}')
+print(f'PC2 (scalar): {eigen_vals[1]}')
 print(res)
 
 # check if unit vectors
@@ -83,7 +94,7 @@ here I plot data in the coordinate system PC1-PC2
 '''
 ###
 
-print(XY)
+# print(XY)
 
 XY_ = np.dot(np.transpose(XY), eigen_vecs[:, :])
 
@@ -99,4 +110,54 @@ plt.ylabel('PC2')
 ax.set_aspect('equal', 'box')
 plt.grid()
 plt.savefig(os.path.join(OUT_PATH, 'PC1PC2.png'), dpi=600)
+plt.close(fig2)
 # plt.show()
+
+# print diagram
+fig3 = plt.figure()
+plt.bar(['PC1', 'PC2'], eigen_vals)
+plt.savefig(os.path.join(OUT_PATH, 'PC_values.png'), dpi=600)
+plt.close(fig3)
+# check
+product1 = np.matmul(cov_mat, PC1)  # sorting fails dramatically
+product2 = eigen_vals[0] * PC1
+
+print(product1, product2)
+
+##################### TMP PART #########################################################################################
+######################## REMOVE IT #####################################################################################
+########################### IF YOU WANT TO HAVE PRODUCTION CODE ########################################################
+# random
+
+X = np.random.random_sample(20)
+Y = np.random.random_sample(20)
+X = (X - np.mean(X))/np.std(X)
+Y = (Y - np.mean(Y))/np.std(Y)
+plt.scatter(X, Y)
+plt.show()
+print(X, Y)
+XY = np.array([X, Y])
+cov_mat = np.cov(XY)
+eigen_vals_non_sorted, eigen_vecs_non_sorted = np.linalg.eig(cov_mat)
+idx = np.flip(np.argsort(eigen_vals_non_sorted))
+eigen_vals = eigen_vals_non_sorted[idx]
+eigen_vecs = eigen_vecs_non_sorted[idx]
+
+print('\nPC eigenvalues: \n', eigen_vals)
+print('\nPC eigenvectors: \n', eigen_vecs)
+
+# Plot PCs at the plot of the original data
+ax = original_data.axes[0]
+ax.set_aspect('equal', 'box')
+ax.arrow(0, 0, *eigen_vecs[0],
+         head_width=0.2, head_length=0.3, width=0.05, color='red')  # PC1
+ax.arrow(0, 0, *eigen_vecs[1],
+         head_width=0.2, head_length=0.3, width=0.05, color='blue')  # PC2
+plt.savefig(os.path.join(OUT_PATH, 'random_PCA_2D.png'), dpi=600)
+plt.close()
+
+# print diagram
+fig3 = plt.figure()
+plt.bar(['PC1', 'PC2'], eigen_vals)
+plt.savefig(os.path.join(OUT_PATH, 'random_PC_values.png'), dpi=600)
+plt.close(fig3)
