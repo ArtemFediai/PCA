@@ -136,7 +136,7 @@ print(product1, product2)
 '''
 here I plot reconstructed things using only the first PC
 '''
-fig2_ = plt.figure()
+fig2_ = plt.figure(figsize=[4,4])
 
 WL_transpose = eigen_vecs[:, 0]
 WL_normal = eigen_vecs[:, 0][np.newaxis]  # restricted eigenvectors
